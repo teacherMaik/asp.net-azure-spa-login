@@ -1,0 +1,13 @@
+.vscode/
+.DS_Store
+*.user
+*.suo
+
+# Frontend
+node_modules/
+dist/
+.angular/
+
+# Backend
+bin/
+obj/

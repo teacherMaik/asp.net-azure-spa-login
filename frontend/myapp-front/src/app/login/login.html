@@ -1,0 +1,25 @@
+<main class="flex h-screen w-full flex-col items-center justify-center bg-slate-50 p-6">
+    <div class="h-100 w-200 flex flex-col justify-center items-center gap-6 p-10 bg-white shadow-xl rounded-2xl border border-slate-200">
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">
+            Pick Your Poison
+        </h1>
+
+        <div id="login-socials" class="flex gap-6">
+            <button (click)="onLogin('Dev')" class="w-50 px-8 py-3 bg-blue-700 text-white font-bold rounded-lg 
+               cursor-pointer 
+               hover:bg-blue-800 hover:shadow-lg 
+               active:scale-95 active:bg-blue-900 
+               transition-all duration-200">
+                Microsoft
+            </button>
+            <button (click)="onLogin('Dev')" class="w-50 px-8 py-3 bg-blue-700 text-white font-bold rounded-lg 
+               cursor-pointer 
+               hover:bg-blue-800 hover:shadow-lg 
+               active:scale-95 active:bg-blue-900 
+               transition-all duration-200">
+                Google
+            </button>
+        </div>
+
+    </div>
+</main>

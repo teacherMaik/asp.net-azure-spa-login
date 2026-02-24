@@ -1,0 +1,31 @@
+<main class="flex h-screen w-full flex-col items-center justify-center bg-slate-50 p-6">
+    <div class="h-100 w-200 flex flex-col justify-center items-center bg-white p-10 shadow-xl rounded-2xl border border-slate-200 text-center">
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">
+            Welcome, {{ user?.displayName }}!
+        </h1>
+        <p class="text-slate-500 mt-2 italic">Joined on: {{ user?.joinedAt | date:'mediumDate' }}</p>
+
+        <div class="mt-8 space-y-4 text-left border-t border-slate-100 pt-6">
+            <div class="flex justify-between">
+                <span class="text-slate-400 text-sm font-medium uppercase">App ID</span>
+                <span class="text-slate-900 font-mono font-bold">{{ user?.appId }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-slate-400 text-sm font-medium uppercase">Provider</span>
+                <span class="text-slate-900">{{ user?.provider }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-slate-400 text-sm font-medium uppercase">Email</span>
+                <span class="text-slate-900 text-sm">{{ user?.email }}</span>
+            </div>
+        </div>
+
+        <button (click)="logout()" class="w-50 px-8 py-3 bg-blue-700 text-white font-bold rounded-lg 
+               cursor-pointer 
+               hover:bg-blue-800 hover:shadow-lg 
+               active:scale-95 active:bg-blue-900 
+               transition-all duration-200">
+            Log Out
+        </button>
+    </div>
+</main>
