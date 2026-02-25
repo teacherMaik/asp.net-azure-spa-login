@@ -11,3 +11,5 @@ dist/
 # Backend
 bin/
 obj/
+
+.env

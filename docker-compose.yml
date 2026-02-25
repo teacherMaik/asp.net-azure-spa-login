@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./backend/MyApp.Api
+      dockerfile: Dockerfile
+    ports:
+      - "5029:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+
+  frontend:
+    build:
+      context: ./frontend/myapp-front
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
