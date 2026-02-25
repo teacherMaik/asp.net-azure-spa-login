@@ -7,6 +7,11 @@ services:
       - "5029:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      # Map the .env keys to the container environment
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
 
 
   frontend:

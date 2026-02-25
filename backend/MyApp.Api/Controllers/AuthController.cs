@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Api.Models;
+using MyApp.Api.Data; // Ensure this matches where your AppDbContext lives
+using Microsoft.EntityFrameworkCore;
 
 namespace MyApp.Api.Controllers
 {
@@ -7,11 +9,15 @@ namespace MyApp.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        // Change to false when you want to stop the "Cheat" mode
+        // The _context is our "bridge" to the Neon Database
+        private readonly AppDbContext _context;
         private const bool IsDevMode = true; 
 
-        // Temporary in-memory list of users
-        private static readonly List<UserProfile> _users = new List<UserProfile>();
+        // Constructor: ASP.NET "injects" the database connection here automatically
+        public AuthController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
@@ -33,7 +39,6 @@ namespace MyApp.Api.Controllers
                     );
                 }
 
-                // LIVE MODE: Future expansion for real Microsoft/Google tokens
                 return Unauthorized(new { message = "Live authentication is not yet configured." });
             }
             catch (Exception ex)
@@ -44,27 +49,44 @@ namespace MyApp.Api.Controllers
 
         private IActionResult ProcessLogin(string externalId, string provider, string email)
         {
-            // 1. Check if user already exists
-            var existingUser = _users.FirstOrDefault(u => u.Id == externalId);
-            if (existingUser != null) return Ok(existingUser);
+            // 1. Check the DATABASE (Neon) if the user already exists
+            // We search by ExternalId (the ID from Google/Microsoft/DevMode)
+            var existingUser = _context.UserProfiles.FirstOrDefault(u => u.ExternalId == externalId);
+            
+            if (existingUser != null) 
+            {
+                return Ok(existingUser);
+            }
 
-            // 2. Create new user with "siemens_x" AppId logic
+            // 2. Prepare a new user object
             var newUser = new UserProfile
             {
-                Id = externalId,
+                ExternalId = externalId,
                 Provider = provider,
                 Email = email,
-                AppId = $"siemens_{_users.Count + 1}",
-                DisplayName = $"siemens_{_users.Count + 1}"
-                // JoinedAt is set automatically by the Model's default
+                // We leave DisplayName/AppId blank for a moment because 
+                // we don't know the unique numeric ID yet until we save.
             };
 
-            _users.Add(newUser);
+            // 3. Add to the tracking list and Save to Neon
+            _context.UserProfiles.Add(newUser);
+            _context.SaveChanges(); 
+            
+            /* MAGIC MOMENT: 
+               After SaveChanges(), Postgres has assigned a unique 'Id' (e.g., 1, 2, 3).
+               EF Core automatically updated our 'newUser.Id' property with that value.
+            */
+
+            // 4. Now we can apply your "siemens_n" logic using the real DB ID
+            newUser.DisplayName = $"siemens_{newUser.Id}";
+            
+            // Save one more time to update the DisplayName in the database
+            _context.SaveChanges();
+
             return Ok(newUser);
         }
     }
 
-    // The "Shape" of the data sent from your Angular AuthService
     public class LoginRequest 
     {
         public string Provider { get; set; } = string.Empty;
