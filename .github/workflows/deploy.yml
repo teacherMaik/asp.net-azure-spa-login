@@ -1,0 +1,42 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # Job 1: Build and Push Backend
+  backend-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend/MyApp.Api
+          push: true
+          tags: teachermaik/siemens-backend:v2 # Adjust to your actual backend repo name
+
+  # Job 2: Build and Push Frontend
+  frontend-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend/myapp-front
+          push: true
+          tags: teachermaik/siemens-frontend:v2
+          build-args: |
+            ANGULAR_ENV=production

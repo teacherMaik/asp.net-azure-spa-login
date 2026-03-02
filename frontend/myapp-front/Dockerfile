@@ -3,8 +3,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build -- --configuration production
-RUN ls -R dist
+ARG ANGULAR_ENV=production
+RUN if [ "$ANGULAR_ENV" = "production" ]; then \
+      npm run build -- --configuration production; \
+    else \
+      npm run build -- --configuration development; \
+    fi
 
 # --- DEBUG STEP ---
 # This will print the EXACT path of every file in the dist folder
